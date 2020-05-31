@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Threading.Tasks.Dataflow;
 
 namespace LinqConsoleApp
 {
@@ -274,6 +276,11 @@ namespace LinqConsoleApp
         /// </summary>
         public void Przyklad7()
         {
+            var res = Emps.GroupBy(e => e.Job).Select(job => new
+            {
+                Praca = job.Key,
+                LiczbaPracownikow = job.Count()
+            });
            // var group
         }
 
@@ -283,7 +290,7 @@ namespace LinqConsoleApp
         /// </summary>
         public void Przyklad8()
         {
-
+            var result = Emps.Where(e => e.Job == "Backend programmer").Any();
         }
 
         /// <summary>
@@ -302,29 +309,27 @@ namespace LinqConsoleApp
         /// </summary>
         public void Przyklad10Button_Click()
         {
-            var result = Emps.Select( e => new
-            {
-                e.Ename,
-                e.Job,
-                e.HireDate
-            }).Union(
-            {
+            var select = Emps.Select(e => { e.Ename = "Brak wartosci"; e.Job = null; e.HireDate = null; return e; });
+            var result = Emps.Union(select);
 
-            })
-            ;
         }
 
         //Znajdź pracownika z najwyższą pensją wykorzystując metodę Aggregate()
         public void Przyklad11()
         {
-
+            var topSalary = Emps.Select(emp => emp.Salary).Aggregate((top, result) => top > result ? result : top);
+            var reslut = Emps.Where(emp => emp.Salary == topSalary);
         }
 
         //Z pomocą języka LINQ i metody SelectMany wykonaj złączenie
         //typu CROSS JOIN
         public void Przyklad12()
         {
-
+            var reslut = Emps.SelectMany(e => Depts.Select(em => new
+            {
+                name = e.Deptno
+            }
+            )); ;
         }
     }
 }
